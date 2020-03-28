@@ -22,3 +22,11 @@ uint8_t MotorDriver::getLeftMotorPercentage() {
 uint8_t MotorDriver::getRightMotorPercentage() {
   return m_actualRightMotorPercentage;
 }
+
+
+void MotorDriver::driveMotor(MotorBehavior behaviors) {
+  switch(behaviors) {
+  //case MotorBehavior::MoveForward:
+
+  }
+}

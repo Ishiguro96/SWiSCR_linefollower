@@ -133,8 +133,8 @@ int main() {
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 200);
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 800);
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 999);
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 999);
 
   while (1) {
 
