@@ -25,7 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 // Include LineFollower main class
-#include "lineFollower.h"
+//#include "lineFollower.h"
+#include "motorDriver.h"
 
 // Include standard libraries for some functions needed for UART communication
 #include <cstring>
@@ -87,7 +88,8 @@ void UART_send_string(char* str, uint16_t num_of_bytes) {
   * @brief  The application entry point.
   * @retval int
   */
-int main() {
+int main(void)
+{
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -116,8 +118,11 @@ int main() {
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
-  LineFollower lineFollower(2000, true);
+
+  //LineFollower lineFollower(2000, true);
+  MotorDriver motorDriver(htim1);
   printf("LineFollower v.0.0\n");
+  printf("Motors test\n");
 
   // UART variables
   char UART_buffer[255] = {0};
@@ -125,20 +130,20 @@ int main() {
 
   // Start ADC comparisions and send data over DMA
   HAL_DMA_Init(&hdma_adc1);
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)lineFollower.getVariableForMeasurements(), ADC_CHANNELS);
-
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  //HAL_ADC_Start_DMA(&hadc1, (uint32_t*)lineFollower.getVariableForMeasurements(), ADC_CHANNELS);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 999);
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 999);
 
   while (1) {
-
-    lineFollower.run();
+    motorDriver.driveMotor(MotorBehavior::MoveForward);
+    HAL_Delay(3000);
+    motorDriver.driveMotor(MotorBehavior::TurnRightGently);
+    HAL_Delay(3000);
+    motorDriver.driveMotor(MotorBehavior::TurnLeftGently);
+    HAL_Delay(3000);
+    //lineFollower.run();
     // SOME OLD PWM CODE
     /*if(HAL_UART_GetState(&huart2) != HAL_UART_STATE_ERROR) {
       HAL_StatusTypeDef recv_state = HAL_UART_Receive(&huart2, (uint8_t*)buff, sizeof(buff), 100);
@@ -165,7 +170,7 @@ int main() {
     //UART_send_string(UART_buffer, num_of_bytes_to_transmit);
 
 
-    HAL_Delay(100);
+    //HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -428,9 +433,13 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, MotorA_ENB_Pin|MotorB_ENB_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PA5 */
   GPIO_InitStruct.Pin = GPIO_PIN_5;
@@ -438,6 +447,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : MotorA_ENB_Pin MotorB_ENB_Pin */
+  GPIO_InitStruct.Pin = MotorA_ENB_Pin|MotorB_ENB_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 

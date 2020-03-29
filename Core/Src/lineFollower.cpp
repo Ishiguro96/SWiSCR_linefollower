@@ -1,9 +1,9 @@
 #include "lineFollower.h"
 
 
-LineFollower::LineFollower(uint16_t threshold, bool invertedColors)
+LineFollower::LineFollower(TIM_HandleTypeDef& htim, uint16_t threshold, bool invertedColors)
   : m_colorReader(threshold, invertedColors),
-    m_motorDriver()
+    m_motorDriver(htim)
 {
 
 }

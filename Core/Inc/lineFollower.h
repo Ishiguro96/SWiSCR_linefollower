@@ -6,7 +6,7 @@
 
 class LineFollower {
 public:
-  LineFollower(uint16_t threshold, bool invertedColors = false);
+  LineFollower(TIM_HandleTypeDef& htim, uint16_t threshold, bool invertedColors = false);
   void run();
 
   //Debug functions
