@@ -6,7 +6,7 @@
 #define NUMBER_OF_OPTOCOUPLERS 4
 
 enum class ColorsEnum {
-  Line, Ambient
+  Line = 1, Ambient = 0
 };
 
 // Structure to hold read colors - read from left to right (top view)

@@ -6,10 +6,10 @@
 #include "stm32f4xx_hal.h"
 
 // Defines for PWM and motors
-#define MOTORA_PWM_CHANNEL TIM_CHANNEL_1
-#define MOTORB_PWM_CHANNEL TIM_CHANNEL_2
-#define MOTORA_ENB GPIO_PIN_4
-#define MOTORB_ENB GPIO_PIN_5
+#define MOTORA_PWM_CHANNEL TIM_CHANNEL_2
+#define MOTORB_PWM_CHANNEL TIM_CHANNEL_1
+#define MOTORA_ENB GPIO_PIN_5 // PB5 -> D4
+#define MOTORB_ENB GPIO_PIN_4 // PB4 -> D5
 #define MAX_PWM_REGISTER 999
 
 // Behaviors needed by motors in LineFollower
@@ -20,6 +20,7 @@ enum class MotorBehavior {
   TurnRightGently,
   TurnLeftSharply,
   TurnRightSharply,
+  Stop
 };
 
 enum class Motors {
@@ -29,12 +30,13 @@ enum class Motors {
 
 class MotorDriver {
 private:
-  static constexpr int16_t forwardPower[2] = {80, 80};
+  static constexpr int16_t forwardPower[2] = {40, 40};
   static constexpr int16_t backwardPower[2] = {-100, -100};
-  static constexpr int16_t leftGentlyPower[2] = {80, 40};
-  static constexpr int16_t rightGentlyPower[2] = {40, 80};
+  static constexpr int16_t leftGentlyPower[2] = {60, 30};
+  static constexpr int16_t rightGentlyPower[2] = {30, 60};
   static constexpr int16_t leftSharplyPower[2] = {100, -80};
   static constexpr int16_t rightSharplyPower[2] = {-80, 100};
+  static constexpr int16_t stopPower[2] = {0, 0};
 
   uint8_t m_actualLeftMotorPercentage;
   uint8_t m_actualRightMotorPercentage;

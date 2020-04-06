@@ -86,5 +86,9 @@ void MotorDriver::driveMotor(const MotorBehavior behaviors) {
   case MotorBehavior::TurnRightSharply:
     _driveMotors(rightSharplyPower);
     break;
+
+  case MotorBehavior::Stop:
+    _driveMotors(stopPower);
+    break;
   }
 }

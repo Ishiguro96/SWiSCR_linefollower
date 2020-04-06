@@ -60,6 +60,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define USER_button_Pin GPIO_PIN_13
+#define USER_button_GPIO_Port GPIOC
 #define MotorA_ENB_Pin GPIO_PIN_4
 #define MotorA_ENB_GPIO_Port GPIOB
 #define MotorB_ENB_Pin GPIO_PIN_5

@@ -25,8 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 // Include LineFollower main class
-//#include "lineFollower.h"
-#include "motorDriver.h"
+#include "lineFollower.h"
 
 // Include standard libraries for some functions needed for UART communication
 #include <cstring>
@@ -41,8 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ADC_CHANNELS 4      // ADC Channels
-#define PWM_MAX_COMPARE 999 // Max number in CCR to compare for both PWMs
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -119,31 +117,45 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-  //LineFollower lineFollower(2000, true);
-  MotorDriver motorDriver(htim1);
-  printf("LineFollower v.0.0\n");
-  printf("Motors test\n");
+  LineFollower lineFollower(htim1, 3000, true);
+  char versionString[] = "LineFollower v.0.0\r\n";
+  char secondString[] = "Motors test\r\n";
+  UART_send_string(versionString, sizeof(versionString));
+  UART_send_string(secondString, sizeof(secondString));
 
   // UART variables
-  char UART_buffer[255] = {0};
-  uint16_t num_of_bytes_to_transmit = 0;
+  //char UART_buffer[255] = {0};
+  //uint16_t num_of_bytes_to_transmit = 0;
 
   // Start ADC comparisions and send data over DMA
   HAL_DMA_Init(&hdma_adc1);
-  //HAL_ADC_Start_DMA(&hadc1, (uint32_t*)lineFollower.getVariableForMeasurements(), ADC_CHANNELS);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)lineFollower.getVariableForMeasurements(), NUMBER_OF_OPTOCOUPLERS);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  bool pressed = false;
+  bool toggle = false;
 
   while (1) {
-    motorDriver.driveMotor(MotorBehavior::MoveForward);
-    HAL_Delay(3000);
-    motorDriver.driveMotor(MotorBehavior::TurnRightGently);
-    HAL_Delay(3000);
-    motorDriver.driveMotor(MotorBehavior::TurnLeftGently);
-    HAL_Delay(3000);
-    //lineFollower.run();
+
+    if(!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && !pressed) {
+      toggle = !toggle;
+      pressed = true;
+      HAL_Delay(10);
+    }
+    else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && pressed) {
+      pressed = false;
+      HAL_Delay(10);
+    }
+
+
+    if(toggle) {
+      lineFollower.run();
+    }
+
+    HAL_Delay(1);
+
     // SOME OLD PWM CODE
     /*if(HAL_UART_GetState(&huart2) != HAL_UART_STATE_ERROR) {
       HAL_StatusTypeDef recv_state = HAL_UART_Receive(&huart2, (uint8_t*)buff, sizeof(buff), 100);
@@ -432,6 +444,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -440,6 +453,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, MotorA_ENB_Pin|MotorB_ENB_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : USER_button_Pin */
+  GPIO_InitStruct.Pin = USER_button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(USER_button_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA5 */
   GPIO_InitStruct.Pin = GPIO_PIN_5;
@@ -452,7 +471,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = MotorA_ENB_Pin|MotorB_ENB_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
