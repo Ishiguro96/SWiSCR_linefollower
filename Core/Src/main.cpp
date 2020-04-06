@@ -155,38 +155,6 @@ int main(void)
     }
 
     HAL_Delay(1);
-
-    // SOME OLD PWM CODE
-    /*if(HAL_UART_GetState(&huart2) != HAL_UART_STATE_ERROR) {
-      HAL_StatusTypeDef recv_state = HAL_UART_Receive(&huart2, (uint8_t*)buff, sizeof(buff), 100);
-      if(recv_state == HAL_OK) {
-        sscanf(buff, "%u%u", (unsigned int*)&predkosci[0], (unsigned int*)&predkosci[1]);
-        printf("Wpisane predkosci: %u %u\n", predkosci[0], predkosci[1]);
-
-        //UPDATE PWM
-        if(predkosci[0] > 100) predkosci[0] = 100; // set max velocity
-        if(predkosci[1] > 100) predkosci[1] = 100;
-
-        uint16_t new_compare_1 = (PWM_MAX_COMPARE + 1) / 100 * predkosci[0];
-        uint16_t new_compare_2 = (PWM_MAX_COMPARE + 1) / 100 * predkosci[1];
-
-        if(new_compare_1 > PWM_MAX_COMPARE) new_compare_1 = PWM_MAX_COMPARE;
-        if(new_compare_2 > PWM_MAX_COMPARE) new_compare_2 = PWM_MAX_COMPARE;
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, new_compare_1);
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, new_compare_2);
-      }
-    }*/
-
-    // Send ADC readings over UART
-    //num_of_bytes_to_transmit = sprintf(UART_buffer, "ADC DATA: %d  %d  %d  %d\r\n",adc_data[0], adc_data[1], adc_data[2], adc_data[3]);
-    //UART_send_string(UART_buffer, num_of_bytes_to_transmit);
-
-
-    //HAL_Delay(100);
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-    //lineFollower.run();
   }
 
   return 0;

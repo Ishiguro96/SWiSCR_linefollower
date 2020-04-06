@@ -31,10 +31,12 @@ void LineFollower::run() {
   // 1. Read all colors
   m_colorsReadStruct = m_colorReader.getColors();
 
+  // Prepare variable to deal with it
   _prepareStruct();
 
   m_prevState = m_currentState;
 
+  // Check which situation we have and drive motors
   switch(m_colors) {
   case 0b0110:
     m_motorDriver.driveMotor(MotorBehavior::MoveForward);
